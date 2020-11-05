@@ -1,4 +1,3 @@
-import multi_svr
 from sklearn import metrics
 
 X = [
