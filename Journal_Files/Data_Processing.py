@@ -8,10 +8,10 @@ from sklearn.svm import SVR
 dataset = pd.read_csv('Data_Xihan_11-5_components/angle_u_1.csv')
 X = dataset.iloc[:, -2].values
 print('X values -')
-print(X)
+print(type(X))
 X = X.reshape(len(X), 1)
 #X = normalize(X)
-print(X)
+#print(X)
 y = dataset.iloc[:, -1].values
 print('y values -')
 print(y)
