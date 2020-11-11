@@ -6,7 +6,10 @@ import matplotlib.pyplot as plt
 from sklearn.svm import SVR
 from joblib import dump, load
 
-dataset = pd.read_csv('Data_Xihan_11-5_components/angle_v_1.csv')
+dataset = pd.read_csv('Data_Xihan_11-5_components/angle_v_5.csv')
+#added condition to clean up the data
+#thanks to https://stackoverflow.com/questions/49546428/obtained-a-weird-strange-repeated-svr-plot-instead-on-a-single-smooth-svr-curve
+dataset = dataset.sort_values(by=dataset.columns[1])
 X = dataset.iloc[:, -2].values
 print('X values -')
 X = X.reshape(len(X), 1)
@@ -28,7 +31,7 @@ y_rbf = svr_rbf.fit(X, y).predict(X)
 # Predicting a new result
 #print(sc_y.inverse_transform(regressor.predict(sc_X.transform([[36.5]]))))
 
-dump(svr_rbf, 'trained_models/angle_v_1.joblib')
+dump(svr_rbf, 'trained_models/angle_v_5.joblib')
 
 lw = 1
 plt.scatter(X, y, color='darkorange', label='data')
