@@ -10,9 +10,6 @@ from joblib import dump, load
 folder = 'angle_v_1.csv'
 
 dataset = pd.read_csv('Data_Xihan_11-5_components/' + folder)
-#added condition to clean up the data
-#thanks to https://stackoverflow.com/questions/49546428/obtained-a-weird-strange-repeated-svr-plot-instead-on-a-single-smooth-svr-curve
-#dataset = dataset.mean(axis=0)
 dataset = dataset.iloc[:, 1:3]
 means = dataset.groupby('val').mean()
 print(means.shape)

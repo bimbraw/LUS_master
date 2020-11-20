@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import addcopyfighandler
+from sklearn.model_selection import train_test_split
 
 folder = 'angle_v_1'
 xlabel_u = 'U values'
@@ -12,6 +13,18 @@ print(dataset.shape)
 X = dataset.iloc[:, 2].values
 X = X.reshape(len(X), 1)
 y = dataset.iloc[:, 1].values
+
+#test training split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+print('Training set - X')
+print(X_train)
+print('Test set - X')
+print(X_test)
+print('Training set - y')
+print(y_train)
+print('Test set - y')
+print(y_test)
 
 #added condition to clean up the data
 #thanks to https://stackoverflow.com/questions/49546428
