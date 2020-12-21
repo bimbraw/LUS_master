@@ -1,2 +1,2 @@
 # LUS_master
-My code for LUS scanning guidance project
+My code for Lung Ultrasound Scanning guidance project
