@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn import metrics
 
-folder = 'angle_v_1'
+folder = 'angle_v_2'
 xlabel_u = 'U values'
 xlabel_v = 'V values'
 
@@ -15,18 +15,6 @@ print(dataset.shape)
 X = dataset.iloc[:, 2].values
 X = X.reshape(len(X), 1)
 y = dataset.iloc[:, 1].values
-
-#test training split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-print('Training set - X')
-print(X_train)
-print('Test set - X')
-print(X_test)
-print('Training set - y')
-print(y_train)
-print('Test set - y')
-print(y_test)
 
 #added condition to clean up the data
 #thanks to https://stackoverflow.com/questions/49546428
@@ -42,9 +30,35 @@ for i in X:
 #https://stackoverflow.com/questions/64879466
 means = dataset.groupby('val').mean()
 print(means.shape)
+
+print('These are the means -')
 print(means)
 
-#holdout_score = -1 * metrics.mean_squared_error(y_test, )
+#need to recheck this - some difference one value missing
+print('Val -')
+m = []
+for i in range(66):
+    m.append(i+122)
+print(f'm = {m}')
+
+#test training split
+X_train, X_test, y_train, y_test = train_test_split(m, means, test_size=0.2, random_state=42)
+
+print('Training set - X')
+print(X_train)
+print('Test set - X')
+print(X_test)
+print('Training set - y')
+print(y_train)
+print('Test set - y')
+print(y_test)
+
+mse_Test = metrics.mean_squared_error(y_test, X_test)
+print('Mean squared error for the test set -')
+print(mse_Test)
+mse_Train = metrics.mean_squared_error(y_train, X_train)
+print('Mean squared error for the training set -')
+print(mse_Train)
 
 fig = plt.figure()
 plt.scatter(X, y, color='pink', label='data')
