@@ -7,7 +7,7 @@ from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn import metrics
 from sklearn import svm
 
-folder = 'angle_u_1'
+folder = 'angle_v_1'
 xlabel_u = 'U values'
 xlabel_v = 'V values'
 
@@ -75,15 +75,19 @@ y_train = np.array(y_train).reshape(-1, 1)
 y_test = np.array(y_test).reshape(-1, 1)
 print('Training set - X')
 print(X_train.shape)
+print(type(X_train))
 print(X_train)
 print('Test set - X')
 print(X_test.shape)
+print(type(X_test))
 print(X_test)
 print('Training set - y')
 print(y_train.shape)
+print(type(y_train))
 print(y_train)
 print('Test set - y')
 print(y_test.shape)
+print(type(y_test))
 print(y_test)
 
 #print(X_train.reshape(1, -1))
@@ -91,15 +95,16 @@ print(y_test)
 #print(X_test.reshape(1, -1))
 #print(y_test.reshape(1, -1))
 
-X_train = X_train.astype('float')
-y_train = y_train.astype('float')
-X_test = X_test.astype('float')
-y_test = y_test.astype('float')
+X_train = X_train.astype('double')
+y_train = y_train.astype('double')
+X_test = X_test.astype('double')
+y_test = y_test.astype('double')
 
 print('Started Model training')
-clf = svm.SVC(kernel='linear').fit(X_train, y_train)
+clf = svm.SVR(kernel='linear').fit(X_train, y_train)
 print('Model trained')
 
+#The coefficient of determination (R2 score)
 print('Here is the score -')
 print(clf.score(X_test, y_test))
 
