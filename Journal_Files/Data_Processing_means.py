@@ -1,13 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import addcopyfighandler
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score, cross_val_predict
-from sklearn import metrics
+from sklearn.metrics import mean_squared_error
 from sklearn import svm
+import sklearn
+from sklearn.model_selection import cross_validate
 
-folder = 'angle_v_1'
+folder = 'angle_v_7'
 xlabel_u = 'U values'
 xlabel_v = 'V values'
 
@@ -17,6 +18,7 @@ print(dataset.shape)
 X = dataset.iloc[:, 2].values
 X = X.reshape(len(X), 1)
 y = dataset.iloc[:, 1].values
+#y = np.ravel(y)
 
 #test training split
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -101,12 +103,19 @@ X_test = X_test.astype('double')
 y_test = y_test.astype('double')
 
 print('Started Model training')
-clf = svm.SVR(kernel='linear').fit(X_train, y_train)
+clf = svm.SVR(kernel='rbf').fit(X_train, y_train)
 print('Model trained')
 
 #The coefficient of determination (R2 score)
-print('Here is the score -')
+print('Here is the R2 score -')
 print(clf.score(X_test, y_test))
+
+#print(sorted(sklearn.metrics.SCORERS.keys()))
+
+#Mean Squared Error
+print('Here is the MSE score -')
+#print(cross_validate(clf, X_test, y_test, cv=3, scoring='neg_mean_squared_error'))
+print(mean_squared_error(X_test, y_test))
 
 fig = plt.figure()
 plt.scatter(X, y, color='pink', label='data')
@@ -116,5 +125,5 @@ plt.ylabel('Angle')
 plt.xlim(0, 255)
 plt.ylim(-50, 50)
 plt.title('Output plot for ' + folder)
-plt.savefig('C:/Users/bimbr/OneDrive/Desktop/Research/Lung_Ultrasound/Updated_plots/' + folder + '.png')
+#plt.savefig('C:/Users/bimbr/OneDrive/Desktop/Research/Lung_Ultrasound/Updated_plots/' + folder + '.png')
 plt.show()
