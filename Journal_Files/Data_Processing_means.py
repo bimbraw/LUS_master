@@ -7,7 +7,7 @@ from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.metrics import mean_squared_error
 from sklearn import svm
 
-folder = 'angle_v_7'
+folder = 'angle_v_3'
 xlabel_u = 'U values'
 xlabel_v = 'V values'
 
