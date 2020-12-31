@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import addcopyfighandler
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.metrics import mean_squared_error
 from sklearn import svm
 

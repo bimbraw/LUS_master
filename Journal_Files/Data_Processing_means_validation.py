@@ -1,157 +1,138 @@
-#This is for changing the means axis
-
-import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-import addcopyfighandler
+import matplotlib.pyplot as plt
+import pandas as pd
+
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.metrics import mean_squared_error
 from sklearn import svm
+from sklearn.preprocessing import StandardScaler
+import scipy.interpolate
 
-folder = 'angle_v_7'
+folder = 'angle_v_1'
 xlabel_u = 'U values'
 xlabel_v = 'V values'
 
 u_or_v = 'v'
-kernel = 'poly'
+#kernel = 'poly'
 
 dataset = pd.read_csv('Data_Xihan_11-5_components/' + folder + '.csv')
-print(dataset)
-print(dataset.shape)
-X = dataset.iloc[:, 1].values
-X = X.reshape(len(X), 1)
+#print(dataset)
+#print(dataset.shape)
+x = dataset.iloc[:, 1].values
+#x = x.reshape(len(x), 1)
 y = dataset.iloc[:, 2].values
+print('Here is x (angles) - ')
+print(x)
+print('Here is y (coordinate value) - ')
+print(y)
+#print(round(max(x)))
+#print(max(y))
 
-#test training split
-#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+plt.figure(0)
+plt.scatter(x, y)
+plt.xlim(round(min(x)), round(max(x)))
+plt.ylim(round(min(y)), round(max(y)))
+plt.title('Input data')
+#plt.show()
 
-#added condition to clean up the data
-#thanks to https://stackoverflow.com/questions/49546428
-dataset = dataset.iloc[:, 1:3]
+val_up = 0
+print(len(y))
 
-#https://www.geeksforgeeks.org/python-ways-to-remove-duplicates-from-list/
-y_compressed = []
-for i in y:
-    if i not in y_compressed:
-        y_compressed.append(i)
+for i in range(len(y)):
+    val = y[i]
+    val_up = val_up + val
 
-#added mean condition thanks to
-#https://stackoverflow.com/questions/64879466
-means = dataset.groupby('val').mean()
-print(means.shape)
+sorted_pairs = sorted((i, j) for i, j in zip(x, y))
+true_num = round(min(x))
+means = [0] * (int(round(max(x)) - round(min(x))))
 
-print('Here is the sorted dataframe -')
+index = round(min(x))
+index_array = [0] * (int(round(max(x)) - round(min(x))))
+
+for r in range(int(round(min(x))), int(round(max(x)))):
+    index += 2
+    true_num += 2
+    true_val = 0
+    summed = 0
+    for q in range(len(y)):
+        if sorted_pairs[q][0] < true_num and sorted_pairs[q][0] > (true_num - 2):
+            summed += sorted_pairs[q][1]
+            true_val += 1
+        else:
+            continue
+    if true_val == 0:
+        means[r] = 0
+    else:
+        means[r] = summed / true_val
+    index_array[r] = index
+
 print(means)
+print(index_array)
 
-#this attribute is a list
-print('axes attribute of the Dataframe -')
-print(means.axes)
+plt.figure(1)
+plt.scatter(index_array, means)
+plt.xlim(round(min(x)), round(max(x)))
+plt.ylim(round(min(y)), round(max(y)))
+plt.title('Means data')
+#plt.show()
 
-#this attribute of the dataframe data structure
-print('index attribute of the Dataframe -')
-print(means.index)
-
-#this is class 'pandas.core.indexes.numeric.Int64Index'
-print('Printing the first element -')
-print(means.index[0])
-
-val_y = []
-for i in means.index:
-    val_y.append(i)
-
-print('Here is the val_y list -')
-print(val_y)
-
-val_x = []
-for i in means.angle:
-    val_x.append(i)
-
-print('Here is the val_x list -')
-print(val_x)
-
-X_train, X_test, y_train, y_test = train_test_split(val_x, val_y, test_size=0.2, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(index_array, means, test_size=0.2, random_state=0)
 X_train = np.array(X_train).reshape(-1, 1)
 X_test = np.array(X_test).reshape(-1, 1)
 y_train = np.array(y_train).reshape(-1, 1)
 y_test = np.array(y_test).reshape(-1, 1)
 print('Training set - X')
 print(X_train.shape)
-print(X_train)
+print(X_train.reshape(1, -1))
 print('Test set - X')
 print(X_test.shape)
-print(X_test)
+print(X_test.reshape(1, -1))
 print('Training set - y')
 print(y_train.shape)
-print(y_train)
+print(y_train.reshape(1, -1))
 print('Test set - y')
 print(y_test.shape)
-print(y_test)
+print(y_test.reshape(1, -1))
 
+plt.figure(2)
+plt.scatter(X_train, y_train, color='red', label='training data')
+plt.scatter(X_test, y_test, color='blue', label='testing data')
+plt.title('Testing and Training data')
+plt.xlim(round(min(x)), round(max(x)))
+plt.ylim(round(min(y)), round(max(y)))
+plt.legend()
+#plt.show()
 
-X_train = X_train.astype('double')
-y_train = y_train.astype('double')
-X_test = X_test.astype('double')
-y_test = y_test.astype('double')
+# squeeze to make it 1D
+y_interp = scipy.interpolate.interp1d(X_train.squeeze(), y_train.squeeze(), kind='cubic', fill_value="extrapolate")
 
+pred = y_interp(X_test.squeeze())
+print(pred)
 
-print('Started Model training')
-clf = svm.SVR(kernel=kernel).fit(X_train, y_train)
-print(clf)
-print('Model trained')
+plt.figure(3)
+plt.scatter(X_test, pred, color='red', label='predicted data')
+plt.scatter(X_test, y_test, color='blue', label='testing data')
+plt.title('Predicted data with Testing data')
+plt.xlim(round(min(x)), round(max(x)))
+plt.ylim(round(min(y)), round(max(y)))
+plt.legend()
+#plt.show()
 
-#make predictions
-pred = clf.predict(X_test)
+print('Here is the predicted values -')
+print(pred.round(1))
+print('Here is the y test values -')
+print(y_test.squeeze().round(1))
+print('Here is the difference of both values -')
+difference = y_test.squeeze() - pred
+print(difference.round(1))
+print('Here is the square of the difference -')
+#this is to remove scientific notation
+np.set_printoptions(suppress=True)
+difference_sq = (y_test.squeeze() - pred) ** 2
+print(difference_sq.round(1))
+print('The sum of squares of differences is -')
+print(sum(difference_sq).round(1))
 
+mse = sum(difference_sq / len(pred)).round(1)
 print('Here is the mean squared error -')
-print(mean_squared_error(pred, y_test))
-
-fig = plt.figure()
-#print(X.reshape(1, -1))
-#print(y)
-plt.scatter(X.reshape(1, -1), y, color='yellow', label='original data')
-plt.scatter(val_x, val_y, color='pink', label='mean data')
-plt.plot(means, y_compressed, color='red', label='connected mean data')
-if u_or_v == 'u':
-    plt.ylabel(xlabel_u)
-if u_or_v == 'v':
-    plt.ylabel(xlabel_v)
-plt.xlabel('Angle')
-#plt.ylim(0, 255)
-#plt.xlim(-50, 50)
-plt.legend()
-plt.title('Output plot for ' + folder)
-plt.show()
-
-fig = plt.figure()
-#print(X_test.shape)
-#print(y_test)
-pred = np.reshape(pred, (-1, 1))
-#print(pred.shape)
-#print(pred)
-
-test_data = np.concatenate((np.array(X_test), np.array(y_test)), axis=1)
-test_data = pd.DataFrame(test_data)
-sorted_test = test_data.sort_values(by=test_data.columns[0])
-#print('Here is the sorted test data -')
-#print(sorted_test)
-pred_data = np.concatenate((np.array(X_test), np.array(pred)), axis=1)
-pred_data = pd.DataFrame(pred_data)
-sorted_pred = pred_data.sort_values(by=pred_data.columns[0])
-#print('Here is the sorted pred data -')
-#print(sorted_pred)
-#print(test_data[:, 1])
-#print(test_data)
-#print(sorted_pred[0])
-plt.scatter(sorted_test[0], sorted_test[1], color='black', label='test data')
-plt.plot(sorted_pred[0], sorted_pred[1], color='blue', label='prediction curve')
-if u_or_v == 'u':
-    plt.ylabel(xlabel_u)
-if u_or_v == 'v':
-    plt.ylabel(xlabel_v)
-plt.xlabel('Angle')
-#plt.ylim(0, 255)
-#plt.xlim(-50, 50)
-plt.legend()
-plt.title('Test data/prediction data ' + folder)
-plt.show()
+print(mse)
