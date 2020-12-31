@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn import svm
 
-folder = 'angle_v_7'
+folder = 'angle_v_3'
 xlabel_u = 'U values'
 xlabel_v = 'V values'
 
